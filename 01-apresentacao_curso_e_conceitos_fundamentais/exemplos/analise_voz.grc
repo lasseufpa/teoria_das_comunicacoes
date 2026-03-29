@@ -42,7 +42,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 96.0]
+    coordinate: [205.25, 23.5]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -78,7 +78,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 224.0]
+    coordinate: [82.25, 225.25]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -289,4 +289,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.9.2
+  grc_version: 3.10.12.0
