@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Correlação de Sinais
-# GNU Radio version: 3.10.12.0
+# GNU Radio version: 3.10.9.2
 
 from PyQt5 import Qt
 from gnuradio import qtgui
@@ -22,7 +22,6 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 import sip
-import threading
 
 
 
@@ -49,7 +48,7 @@ class correlacao(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "correlacao")
+        self.settings = Qt.QSettings("GNU Radio", "correlacao")
 
         try:
             geometry = self.settings.value("geometry")
@@ -57,7 +56,6 @@ class correlacao(gr.top_block, Qt.QWidget):
                 self.restoreGeometry(geometry)
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
-        self.flowgraph_started = threading.Event()
 
         ##################################################
         # Variables
@@ -224,11 +222,14 @@ class correlacao(gr.top_block, Qt.QWidget):
         self.digital_corr_est_cc_0 = digital.corr_est_cc((5+0j, 4+0j, 3+0j), 3, 1, 0.9, digital.THRESHOLD_ABSOLUTE)
         self.blocks_vector_source_x_0 = blocks.vector_source_c((5, 4, 3, 1, 2, 1, 2, 1), True, 1, [])
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, 80, True, 0 if "items" == "auto" else max( int(float(8) * 80) if "items" == "time" else int(8), 1) )
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_gr_complex*1, '/home/gabriel/Projects/GNU-Radio/files_dat/signal.dat', False)
+        self.blocks_file_sink_0.set_unbuffered(False)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_throttle2_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.digital_corr_est_cc_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_throttle2_0, 0))
@@ -237,7 +238,7 @@ class correlacao(gr.top_block, Qt.QWidget):
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "correlacao")
+        self.settings = Qt.QSettings("GNU Radio", "correlacao")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -260,7 +261,6 @@ def main(top_block_cls=correlacao, options=None):
     tb = top_block_cls()
 
     tb.start()
-    tb.flowgraph_started.set()
 
     tb.show()
 
